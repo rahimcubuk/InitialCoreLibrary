@@ -3,8 +3,9 @@ using System.Text;
 
 namespace Core.Utilities.Security.Hashing
 {
-    public class HashingHelper
+    public static class HashingHelper
     {
+        // Sifre hash'ini ve salt'ini olusturacak
         public static void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
         {
             using (var hmac = new HMACSHA512())
@@ -14,20 +15,21 @@ namespace Core.Utilities.Security.Hashing
             }
         }
 
+        // Sifreyi dogrulayacak
         public static bool VerifyPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt)
         {
-            using (var hmac = new HMACSHA512(passwordSalt))
+            using (var hmac = new System.Security.Cryptography.HMACSHA512(passwordSalt))
             {
-                var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password)); 
+                var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
                 for (int i = 0; i < computedHash.Length; i++)
                 {
-                    if (computedHash[i] != passwordHash[i]) return false;
+                    if (computedHash[i] != passwordHash[i])
+                    {
+                        return false;
+                    }
                 }
+                return true;
             }
-            return true;
         }
     }
 }
-#region README
-//-->Encoding.UTF8.GetBytes(password) password'u byte'a cevirir
-#endregion
